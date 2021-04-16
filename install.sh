@@ -35,6 +35,7 @@ download () {
 }
 
 wget -O "posenet_mobilenet_float_075_1_default_1.tflite" "${POSE_ESTIMATION_URL}"
+mkdir -p assets
 mv "${POSE_ESTIMATION_MODEL}" "assets/${POSE_ESTIMATION_MODEL}"
 
 if [ ${delegate} -eq 1 ]
