@@ -1,18 +1,17 @@
-import 'dart:io';
 import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:object_detection/tflite/classifier.dart';
-import 'package:object_detection/tflite/recognition.dart';
 import 'package:object_detection/tflite/stats.dart';
 import 'package:object_detection/ui/camera_view_singleton.dart';
 import 'package:object_detection/utils/isolate_utils.dart';
 
+
 /// [CameraView] sends each frame for inference
 class CameraView extends StatefulWidget {
   /// Callback to pass results after inference to [HomeView]
-  final Function(List<Recognition> recognitions) resultsCallback;
+  final Function(List<int> recognitions) resultsCallback;
 
   /// Callback to inference stats to [HomeView]
   final Function(Stats stats) statsCallback;
@@ -39,6 +38,9 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
   /// Instance of [IsolateUtils]
   IsolateUtils isolateUtils;
 
+  List<int> uiThreadInferenceTime = [];
+
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +58,10 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
     // Spawn a new isolate
     isolateUtils = IsolateUtils();
     isolateUtils.start();
+
+    while(uiThreadInferenceTime.length < 10) {
+      uiThreadInferenceTime.add(100);
+    }
   }
 
   /// Initializes the camera by setting [cameraController]
@@ -65,7 +71,7 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
     // cameras[0] for rear-camera
     cameraController =
-        CameraController(cameras[0], ResolutionPreset.low, enableAudio: false);
+        CameraController(cameras[1], ResolutionPreset.low, enableAudio: false);
 
     cameraController.initialize().then((_) async {
       // Stream of image passed to [onLatestImageAvailable] callback
@@ -101,7 +107,7 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
   /// Callback to receive each frame [CameraImage] perform inference on it
   onLatestImageAvailable(CameraImage cameraImage) async {
-    if (classifier.interpreter != null && classifier.labels != null) {
+    if (classifier.interpreter != null) {
       // If previous inference has not completed then return
       if (predicting) {
         return;
@@ -114,8 +120,7 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
       var uiThreadTimeStart = DateTime.now().millisecondsSinceEpoch;
 
       // Data to be passed to inference isolate
-      var isolateData = IsolateData(
-          cameraImage, classifier.interpreter.address, classifier.labels);
+      var isolateData = IsolateData(cameraImage, classifier.interpreter.address);
 
       // We could have simply used the compute method as well however
       // it would be as in-efficient as we need to continuously passing data
@@ -126,6 +131,10 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
       var uiThreadInferenceElapsedTime =
           DateTime.now().millisecondsSinceEpoch - uiThreadTimeStart;
+
+      // uiThreadInferenceTime.removeAt(0);
+      // uiThreadInferenceTime.add(uiThreadInferenceElapsedTime);
+      // var mean = (uiThreadInferenceTime.reduce((a,b) => a + b) / uiThreadInferenceTime.length).toInt();
 
       // pass results to HomeView
       widget.resultsCallback(inferenceResults["recognitions"]);

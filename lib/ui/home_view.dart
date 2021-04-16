@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:object_detection/tflite/recognition.dart';
 import 'package:object_detection/tflite/stats.dart';
-import 'package:object_detection/ui/box_widget.dart';
 import 'package:object_detection/ui/camera_view_singleton.dart';
 
 import 'camera_view.dart';
+
 
 /// [HomeView] stacks [CameraView] and [BoxWidget]s with bottom sheet for stats
 class HomeView extends StatefulWidget {
@@ -15,7 +14,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   /// Results to draw bounding boxes
-  List<Recognition> results;
+  List<int> results;
 
   /// Realtime stats
   Stats stats;
@@ -34,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
           CameraView(resultsCallback, statsCallback),
 
           // Bounding boxes
-          boundingBoxes(results),
+          // boundingBoxes(results),
 
           // Heading
           Align(
@@ -42,12 +41,12 @@ class _HomeViewState extends State<HomeView> {
             child: Container(
               padding: EdgeInsets.only(top: 20),
               child: Text(
-                'Object Detection Flutter',
+                'Yi Shinuk',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepOrangeAccent.withOpacity(0.6),
+                  color: Colors.deepPurpleAccent.withOpacity(0.6),
                 ),
               ),
             ),
@@ -102,22 +101,8 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// Returns Stack of bounding boxes
-  Widget boundingBoxes(List<Recognition> results) {
-    if (results == null) {
-      return Container();
-    }
-    return Stack(
-      children: results
-          .map((e) => BoxWidget(
-                result: e,
-              ))
-          .toList(),
-    );
-  }
-
   /// Callback to get inference results from [CameraView]
-  void resultsCallback(List<Recognition> results) {
+  void resultsCallback(List<int> results) {
     setState(() {
       this.results = results;
     });

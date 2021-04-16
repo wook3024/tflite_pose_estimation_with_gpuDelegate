@@ -33,17 +33,11 @@ class IsolateUtils {
 
     await for (final IsolateData isolateData in port) {
       if (isolateData != null) {
-        Classifier classifier = Classifier(
-            interpreter:
-                Interpreter.fromAddress(isolateData.interpreterAddress),
-            labels: isolateData.labels);
-        imageLib.Image image =
-            ImageUtils.convertCameraImage(isolateData.cameraImage);
+        Classifier classifier = Classifier(interpreter: Interpreter.fromAddress(isolateData.interpreterAddress));
+        imageLib.Image image = ImageUtils.convertCameraImage(isolateData.cameraImage);
         if (Platform.isAndroid) {
           image = imageLib.copyRotate(image, 90);
         }
-        // print(image.data.shape);
-        // print(image.data[0].runtimeType);
         Map<String, dynamic> results = classifier.predict(image);
         isolateData.responsePort.send(results);
       }
@@ -61,6 +55,5 @@ class IsolateData {
   IsolateData(
     this.cameraImage,
     this.interpreterAddress,
-    this.labels,
   );
 }
