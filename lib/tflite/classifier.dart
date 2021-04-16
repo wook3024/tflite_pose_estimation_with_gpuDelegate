@@ -150,51 +150,7 @@ class Classifier {
         DateTime.now().millisecondsSinceEpoch - inferenceTimeStart;
     var predictElapsedTime =
         DateTime.now().millisecondsSinceEpoch - predictStartTime;
-
-    // int count1 = 0;
-    // float_heatmaps.getIntList().reshape([23,17,17]).forEach((value) {
-    //   value.forEach((value2) {
-    //     value2.forEach((value3) {
-    //       // print(value3);
-    //       if (value3 > -5) { count1 += 1; }
-    //     });
-    //   });
-    // });
-    // print("count1: $count1");
-    //
-    // int count2 = 0;
-    // float_short_offsets.getIntList().reshape([23, 17, 34]).forEach((value) {
-    //   value.forEach((value2) {
-    //     value2.forEach((value3) {
-    //       // print(value3);
-    //       if (value3 > -5) { count2 += 1; }
-    //     });
-    //   });
-    // });
-    // print("count2: $count2");
-    //
-    // int count3 = 0;
-    // float_mid_offsets.getIntList().reshape([23, 17, 64]).forEach((value) {
-    //   value.forEach((value2) {
-    //     value2.forEach((value3) {
-    //       // print(value3);
-    //       if (value3 > -5) { count3 += 1; }
-    //     });
-    //   });
-    // });
-    // print("count3: $count3");
-    //
-    // int count4 = 0;
-    // float_segments.getIntList().reshape([23, 17,  1]).forEach((value) {
-    //   value.forEach((value2) {
-    //     value2.forEach((value3) {
-    //       // print(value3);
-    //       if (value3 > -5) { count4 += 1; }
-    //     });
-    //   });
-    // });
-    // print("count4: $count4");
-
+    
     return {
       "recognitions": float_segments.getIntList(),
       "stats": Stats(
