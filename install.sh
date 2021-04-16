@@ -15,6 +15,9 @@ ARM_64="libtensorflowlite_c_arm64.so"
 X86="libtensorflowlite_c_x86.so"
 X86_64="libtensorflowlite_c_x86_64.so"
 
+POSE_ESTIMATION_URL="https://tfhub.dev/tensorflow/lite-model/posenet/mobilenet/float/075/1/default/1?lite-format=tflite"
+POSE_ESTIMATION_MODEL="posenet_mobilenet_float_075_1_default_1.tflite"
+
 delegate=0
 
 while getopts "d" OPTION
@@ -30,6 +33,9 @@ download () {
     mkdir -p "${ANDROID_DIR}$2/"
     mv $1 "${ANDROID_DIR}$2/${ANDROID_LIB}"
 }
+
+wget -O "posenet_mobilenet_float_075_1_default_1.tflite" "${POSE_ESTIMATION_URL}"
+mv "${POSE_ESTIMATION_MODEL}" "assets/${POSE_ESTIMATION_MODEL}"
 
 if [ ${delegate} -eq 1 ]
 then
